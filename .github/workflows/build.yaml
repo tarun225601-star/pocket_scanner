@@ -2,44 +2,40 @@ name: Build Flutter APK
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. कोड चेकआउट करना
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-    # 2. Java सेट अप करना (Flutter के लिए जरूरी है)
-    - name: Set up Java
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '17'
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-    # 3. Flutter एनवायरनमेंट सेट अप करना
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.19.x'
-        channel: 'stable'
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.x'
+          channel: 'stable'
 
-    # 4. पब डिपेंडेंसी इंस्टॉल करना
-    - name: Install dependencies
-      run: flutter pub get
+      - name: Recreate Android Platform to Fix Gradle
+        run: |
+          rm -rf android
+          flutter create . --platforms=android
 
-    # 5. रिलीज़ APK बनाना
-    - name: Build APK
-      run: flutter build apk --release
+      - name: Install dependencies
+        run: flutter pub get
 
-    # 6. APK को आर्टिफैक्ट के रूप में सेव करना ताकि तू उसे डाउनलोड कर सके
-    - name: Upload APK Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: pocket-scanner-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
