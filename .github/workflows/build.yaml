@@ -31,9 +31,14 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Set Android SDK Compile Version
+      - name: Fix Flutter Blue Plus Gradle Issue
         run: |
-          echo "android.compileSdkVersion=34" >> android/gradle.properties
+          find ~/.pub-cache -name "build.gradle" | grep "flutter_blue_plus_android" | while read file; do
+            echo "Fixing compileSdkVersion in $file"
+            if ! grep -q "compileSdkVersion" "$file"; then
+              echo "android { compileSdkVersion 34 }" >> "$file"
+            fi
+          done
 
       - name: Build APK
         run: flutter build apk --release
