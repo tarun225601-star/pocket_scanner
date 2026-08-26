@@ -31,11 +31,13 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Fix Android Compile SDK for Plugins
+      - name: Force Fix Flutter Blue Plus Gradle
         run: |
-          cd android
-          echo "android { compileSdkVersion 34 }" >> app/build.gradle
-          cd ..
+          BLUE_GRADLE=$(find ~/.pub-cache -path "*/flutter_blue_plus_android*/android/build.gradle" 2>/dev/null)
+          if [ -f "$BLUE_GRADLE" ]; then
+            echo "Found bluetooth gradle at $BLUE_GRADLE"
+            echo "android { compileSdkVersion 34 }" >> "$BLUE_GRADLE"
+          fi
 
       - name: Build APK
         run: flutter build apk --release
