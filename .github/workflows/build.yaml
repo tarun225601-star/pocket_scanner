@@ -1,0 +1,30 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. रिपॉजिटरी का कोड चेकआउट करना
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # 2. Node.js सेट अप करना (अगर आपका प्रोजेक्ट Node.js पर आधारित है)
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    # 3. डिपेंडेंसी इंस्टॉल करना
+    - name: Install dependencies
+      run: npm install
+
+    # 4. प्रोजेक्ट बिल्ड या टेस्ट चलाना
+    - name: Run build/test
+      run: npm test
