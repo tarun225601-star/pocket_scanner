@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build Flutter App
 
 on:
   push:
@@ -11,32 +11,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. रिपॉजिटरी का कोड चेकआउट करना
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. Node.js सेट अप करना
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
+    # Flutter Environment Setup
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
       with:
-        node-version: '20'
+        flutter-version: '3.19.x'
+        channel: 'stable'
 
-    # 3. डिपेंडेंसी इंस्टॉल करना
+    # Dependencies Install
     - name: Install dependencies
-      run: npm install
+      run: flutter pub get
 
-    # 4. प्रोजेक्ट बिल्ड करना (अगर आपकी कोई बिल्ड स्क्रिप्ट है, जैसे npm run build)
-    - name: Run build
-      run: npm run build
-      # नोट: अगर आपकी package.json में 'build' स्क्रिप्ट नहीं है, तो आप इस स्टेप को हटा सकते हैं या अपनी जरूरत के अनुसार बदल सकते हैं।
+    # Build APK for Android
+    - name: Build APK
+      run: flutter build apk --release
 
-    # 5. बिल्ड आर्टिफैक्ट सेव करना (Artifact Upload)
-    - name: Upload Build Artifact
+    # Upload APK as Artifact
+    - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: my-build-artifact   # आप आर्टिफैक्ट का नाम अपनी मर्जी से कुछ भी रख सकते हैं
-        path: |
-          # यहाँ उन फाइलों या फोल्डर के नाम दें जिन्हें आप सेव करना चाहते हैं
-          # जैसे अगर आपकी बिल्ड 'dist' या 'build' फोल्डर में बनती है:
-          - dist/
-          # या अगर आप पूरी प्रोजेक्ट फाइलें चाहते हैं तो '*' लिख सकते हैं
+        name: app-release-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
