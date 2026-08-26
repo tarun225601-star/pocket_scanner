@@ -31,12 +31,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Ultimate Fix for Flutter Blue Plus
+      - name: Set Android SDK Compile Version
         run: |
-          find ~/.pub-cache -name "build.gradle" | grep "flutter_blue_plus_android" | while read file; do
-            echo "Fixing $file"
-            echo "android { compileSdkVersion 34 }" >> "$file"
-          done
+          echo "android.compileSdkVersion=34" >> android/gradle.properties
 
       - name: Build APK
         run: flutter build apk --release
