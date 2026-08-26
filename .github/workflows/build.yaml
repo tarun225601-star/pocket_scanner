@@ -31,13 +31,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Fix Flutter Blue Plus Gradle Issue
+      - name: Force Fix Flutter Blue Plus Gradle
         run: |
-          find ~/.pub-cache -name "build.gradle" | grep "flutter_blue_plus_android" | while read file; do
-            echo "Fixing compileSdkVersion in $file"
-            if ! grep -q "compileSdkVersion" "$file"; then
-              echo "android { compileSdkVersion 34 }" >> "$file"
-            fi
+          find ~/.pub-cache -type f -name "build.gradle" | grep "flutter_blue_plus_android" | while read file; do
+            echo "Injecting compileSdkVersion into $file"
+            echo -e "\nandroid {\n    compileSdkVersion 34\n    defaultConfig {\n        minSdkVersion 21\n    }\n}" >> "$file"
           done
 
       - name: Build APK
